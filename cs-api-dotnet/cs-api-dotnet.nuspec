@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>CaseStackAPI</id>
+    <version>$version$</version>
+    <title>$title$</title>
+    <authors>$author$</authors>
+    <owners>$author$</owners>
+    <projectUrl>http://docs.casestack.io/</projectUrl>
+    <iconUrl>https://ww2.casestack.com/img/logos/yellow_big.png</iconUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>$description$</description>
+    <releaseNotes>Added ability to work with custom fields.</releaseNotes>
+    <copyright>Copyright 2015</copyright>
+  </metadata>
+</package>
