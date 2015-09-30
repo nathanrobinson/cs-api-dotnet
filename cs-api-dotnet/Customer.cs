@@ -1,4 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using Newtonsoft.Json;
+using RestSharp;
+using System;
+using System.Collections.Generic;
+using System.Net;
 
 namespace cs_api_dotnet
 {
@@ -51,6 +55,32 @@ namespace cs_api_dotnet
         /// Dictionary of custom fields created for object.
         /// </summary>
         public Dictionary<string, string> custom_fields { get; set; }
+
+        internal RestClient restClient;
+
+        public void Save()
+        {
+            var request = new RestRequest
+            {
+                Method = Method.PUT,
+                Resource = "api/customer/" + customer_id,
+                RequestFormat = DataFormat.Json
+            };
+
+            var body = JsonConvert.SerializeObject(new { customer = this }, new JsonSerializerSettings
+            {
+                NullValueHandling = NullValueHandling.Ignore
+            });
+
+            request.AddParameter("application/json", body, ParameterType.RequestBody);
+
+            var response = restClient.Execute(request);
+            if (response.ErrorException != null)
+                throw new ApplicationException("Error updating Customer", response.ErrorException);
+
+            if (response.StatusCode != HttpStatusCode.OK)
+                throw new ApplicationException("Error updating Customer: " + response.Content);
+        }
     }
 
     /// <summary>
@@ -60,6 +90,7 @@ namespace cs_api_dotnet
     {
         public string accounting_code { get; set; }
         public string payment_terms { get; set; }
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
         public double credit_limit { get; set; }
     }
 
@@ -84,11 +115,13 @@ namespace cs_api_dotnet
         /// <summary>
         /// Employer identification number (Tax ID)
         /// </summary>
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
         public int ein { get; set; }
 
         /// <summary>
         /// Dun & Bradstreet Identification number
         /// </summary>
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
         public int duns { get; set; }
 
         /// <summary>
