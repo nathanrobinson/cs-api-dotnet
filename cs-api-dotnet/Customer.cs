@@ -5,7 +5,7 @@ namespace cs_api_dotnet
     /// <summary>
     /// Customer Object
     /// </summary>
-    public class Customer
+    public partial class Customer
     {
         /// <summary>
         /// Customer ID

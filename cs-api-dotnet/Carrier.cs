@@ -5,7 +5,7 @@ namespace cs_api_dotnet
     /// <summary>
     /// Carrier Object
     /// </summary>
-    public class Carrier
+    public partial class Carrier
     {
         /// <summary>
         /// Carrier ID
