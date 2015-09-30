@@ -45,6 +45,20 @@ Carrier carrier = api.GetCarrier(carrierId);
 Console.WriteLine("Carrier with ID '{0}' has name '{1}' and accounting code '{2}'", carrierId, carrier.name, carrier.billing.accounting_code);
 ```
 
+**Updating objects**
+
+```C#
+// update a customer
+customer.name = "New name";
+customer.custom_fields["c5dca8e0"] = "50";
+customer.Save();
+
+// update a carrier
+carrier.name = "New name";
+carrier.custom_fields["f571fcc8"] = "value";
+carrier.Save();
+```
+
 **Locking shipment with ID '1'**
 
 ```C#
