@@ -22,7 +22,7 @@ Before you can make any API calls, you'll have to authenticate and pick your env
 CaseStackApi api = new CaseStackApi();
 api.Authenticate("<put your API Key here>", "<put your Company ID here>");
 
-// set this to 'true' to operate on production data
+// set this to 'true' to operate on production data (if not called, the API defaults to production)
 api.UseProduction(false);
 ````
 
@@ -72,8 +72,6 @@ CustomFields shipmentCustomFields = api.GetCustomFields("shipment");
 ```
 
 **Stitching together custom fields IDs and their labels**
-
-This example uses LINQ.
 
 ```C#
 // get a carrier by ID
