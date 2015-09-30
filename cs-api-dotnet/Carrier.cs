@@ -1,4 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using Newtonsoft.Json;
+using RestSharp;
+using System;
+using System.Collections.Generic;
+using System.Net;
 
 namespace cs_api_dotnet
 {
@@ -55,6 +59,32 @@ namespace cs_api_dotnet
         /// Dictionary of custom fields created for object.
         /// </summary>
         public Dictionary<string, string> custom_fields { get; set; }
+
+        internal RestClient restClient;
+
+        public void Save()
+        {
+            var request = new RestRequest
+            {
+                Method = Method.PUT,
+                Resource = "api/carrier/" + carrier_id,
+                RequestFormat = DataFormat.Json
+            };
+
+            var body = JsonConvert.SerializeObject(new { carrier = this }, new JsonSerializerSettings
+            {
+                NullValueHandling = NullValueHandling.Ignore
+            });
+
+            request.AddParameter("application/json", body, ParameterType.RequestBody);
+
+            var response = restClient.Execute(request);
+            if (response.ErrorException != null)
+                throw new ApplicationException("Error updating Carrier", response.ErrorException);
+
+            if (response.StatusCode != HttpStatusCode.OK)
+                throw new ApplicationException("Error updating Carrier: " + response.Content);
+        }
 
     }
 
@@ -266,9 +296,13 @@ namespace cs_api_dotnet
     /// </summary>
     public class Fmcsa
     {
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
         public long dot { get; set; }
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
         public long mc { get; set; }
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
         public long ff { get; set; }
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
         public long mx { get; set; }
         public bool broker_authority { get; set; }
         public bool common_authority { get; set; }
