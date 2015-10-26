@@ -6,7 +6,7 @@ namespace cs_api_dotnet
     /// <summary>
     /// Shipment Object
     /// </summary>
-    public class Shipment
+    public partial class Shipment
     {
         /// <summary>
         /// Shipment ID

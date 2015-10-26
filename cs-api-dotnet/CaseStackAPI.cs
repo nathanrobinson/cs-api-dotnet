@@ -98,6 +98,7 @@ namespace cs_api_dotnet
                 throw new ApplicationException("Error retrieving Carrier", response.ErrorException);
 
             var carrier = response.Data;
+            carrier.restClient = client;
             return carrier;
         }
 
@@ -170,6 +171,7 @@ namespace cs_api_dotnet
                 throw new ApplicationException("Error retrieving Customer", response.ErrorException);
 
             var customer = response.Data;
+            customer.restClient = client;
             return customer;
         }
 
