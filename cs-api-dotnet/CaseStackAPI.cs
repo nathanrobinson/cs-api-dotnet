@@ -19,25 +19,74 @@ namespace cs_api_dotnet
         /// </summary>
         public enum ShipmentStatus
         {
-            [DescriptionAttribute("Broker Approval Pending")]BrokerApprovalPending,
-            [DescriptionAttribute("Quote Pending")]QuotePending,
-            [DescriptionAttribute("Customer Approval Pending")]CustomerApprovalPending,
-            [DescriptionAttribute("Customer Rejected")]CustomerRejected,
-            [DescriptionAttribute("Ready to Tender")]ReadytoTender,
-            [DescriptionAttribute("Tendered")]Tendered,
-            [DescriptionAttribute("Tender Accepted by Carrier")]TenderAcceptedbyCarrier,
-            [DescriptionAttribute("Tender Rejected by Carrier")]TenderRejectedbyCarrier,
-            [DescriptionAttribute("Pickup Appointment Scheduled")]PickupAppointmentScheduled,
-            [DescriptionAttribute("Picked Up")]PickedUp,
-            [DescriptionAttribute("In Transit")]InTransit,
-            [DescriptionAttribute("Delivery Appointment Scheduled")]DeliveryAppointmentScheduled,
-            [DescriptionAttribute("Out for Delivery")]OutforDelivery,
-            [DescriptionAttribute("Delivered")]Delivered,
-            [DescriptionAttribute("Delivery Exception")]DeliveryException,
-            [DescriptionAttribute("Cancelled")]Cancelled,
-            [DescriptionAttribute("Archived")]Archived,
-            [DescriptionAttribute("Invoiced")]Invoiced,
-            [DescriptionAttribute("Billable")]Billable,
+            [DescriptionAttribute("Broker Approval Pending")]
+            BrokerApprovalPending,
+
+            [DescriptionAttribute("Quote Pending")]
+            QuotePending,
+            
+            [DescriptionAttribute("Customer Approval Pending")]
+            CustomerApprovalPending,
+            
+            [DescriptionAttribute("Customer Rejected")]
+            CustomerRejected,
+            
+            [DescriptionAttribute("Ready to Tender")]
+            ReadytoTender,
+            
+            [DescriptionAttribute("Tendered")]
+            Tendered,
+            
+            [DescriptionAttribute("Tender Accepted by Carrier")]
+            TenderAcceptedbyCarrier,
+            
+            [DescriptionAttribute("Tender Accepted by Rep")]
+            TenderAcceptedbyRep,
+            
+            [DescriptionAttribute("Tender Rejected by Carrier")]
+            TenderRejectedbyCarrier,
+            
+            [DescriptionAttribute("Tender Rejected by Rep")]
+            TenderRejectedbyRep,
+            
+            [DescriptionAttribute("Pickup Appointment Scheduled")]
+            PickupAppointmentScheduled,
+            
+            [DescriptionAttribute("Arrived at Pickup Location")]
+            ArrivedatPickupLocation,
+            
+            [DescriptionAttribute("Picked Up")]
+            PickedUp,
+            
+            [DescriptionAttribute("In Transit")]
+            InTransit,
+            
+            [DescriptionAttribute("Delivery Appointment Scheduled")]
+            DeliveryAppointmentScheduled,
+            
+            [DescriptionAttribute("Arrived at Delivery Location")]
+            ArrivedatDeliveryLocation,
+            
+            [DescriptionAttribute("Out for Delivery")]
+            OutforDelivery,
+            
+            [DescriptionAttribute("Delivered")]
+            Delivered,
+            
+            [DescriptionAttribute("Delivery Exception")]
+            DeliveryException,
+            
+            [DescriptionAttribute("Cancelled")]
+            Cancelled,
+            
+            [DescriptionAttribute("Billable")]
+            Billable,
+            
+            [DescriptionAttribute("Invoiced")]
+            Invoiced,
+            
+            [DescriptionAttribute("Archived")]
+            Archived,
         }
 
         /// <summary>

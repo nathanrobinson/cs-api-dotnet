@@ -37,6 +37,12 @@ namespace cs_api_dotnet
         public string logo { get; set; }
 
         /// <summary>
+        /// Homepage of carrier
+        /// </summary>
+        public string website { get; set; }
+
+
+        /// <summary>
         /// Carrier Rep
         /// </summary>
         public string rep { get; set; }
@@ -212,6 +218,14 @@ namespace cs_api_dotnet
         /// Fax Number
         /// </summary>
         public string fax { get; set; }
+        /// <summary>
+        /// Cell Phone Number
+        /// </summary>
+        public string mobile { get; set; }
+        /// <summary>
+        /// Notes for the contact
+        /// </summary>
+        public string notes { get; set; }
     }
 
     /// <summary>
@@ -258,6 +272,19 @@ namespace cs_api_dotnet
         /// Weather this carrier is a freight forwarder (non-vessel operating common carrier)
         /// </summary>
         public bool nvocc { get; set; }
+        /// <summary>
+        /// Weather this carrier supports expedited shipments
+        /// </summary>
+        public bool expedited { get; set; }
+        /// <summary>
+        /// Weather this carrier has team drivers
+        /// </summary>
+        public bool teams { get; set; }
+        /// <summary>
+        /// Weather this carrier has White Glove services to handle sensitive shipments
+        /// </summary>
+        public bool whiteglove { get; set; }
+
     }
 
     /// <summary>
