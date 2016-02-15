@@ -1,4 +1,7 @@
 # cs-api-dotnet
+
+[![NuGet version](https://badge.fury.io/nu/CaseStackAPI.svg)](https://badge.fury.io/nu/CaseStackAPI)
+
 This library allows you to push/pull data out of the CaseStack Supply Chain Management System from your .NET apps.
 
 For complete documentation visit [http://docs.casestack.io/](http://docs.casestack.io/)
