@@ -13,6 +13,7 @@ namespace cs_api_dotnet
         private string _apiKey = "";
         private string _companyId = "";
         private string _apiEndpoint = "https://app.casestack.io";
+        private string _apiVersion = "1.0.0";
 
         /// <summary>
         /// Available shipment statuses
@@ -121,6 +122,7 @@ namespace cs_api_dotnet
                 BaseUrl = new Uri(_apiEndpoint),
                 Authenticator = new HttpBasicAuthenticator(_companyId, _apiKey)
             };
+            client.AddDefaultHeader("Accept-Version", _apiVersion);
             return client;
         }
 
