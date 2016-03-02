@@ -5,6 +5,8 @@ VisualStudioVersion = 12.0.21005.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "cs-api-dotnet", "cs-api-dotnet\cs-api-dotnet.csproj", "{D069715D-8ECC-4596-802B-3CBB72EF50C4}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "cs-api-dotnet-tests", "cs-api-dotnet-tests\cs-api-dotnet-tests.csproj", "{58156102-80D8-4F8A-9B0A-7EA899114944}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -25,6 +27,16 @@ Global
 		{D069715D-8ECC-4596-802B-3CBB72EF50C4}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{D069715D-8ECC-4596-802B-3CBB72EF50C4}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{D069715D-8ECC-4596-802B-3CBB72EF50C4}.Release|x86.ActiveCfg = Release|Any CPU
+		{58156102-80D8-4F8A-9B0A-7EA899114944}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{58156102-80D8-4F8A-9B0A-7EA899114944}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{58156102-80D8-4F8A-9B0A-7EA899114944}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{58156102-80D8-4F8A-9B0A-7EA899114944}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{58156102-80D8-4F8A-9B0A-7EA899114944}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{58156102-80D8-4F8A-9B0A-7EA899114944}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{58156102-80D8-4F8A-9B0A-7EA899114944}.Release|Any CPU.Build.0 = Release|Any CPU
+		{58156102-80D8-4F8A-9B0A-7EA899114944}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{58156102-80D8-4F8A-9B0A-7EA899114944}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{58156102-80D8-4F8A-9B0A-7EA899114944}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,6 +1,9 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Net;
+using System.Web;
 using RestSharp;
+using RestSharp.Authenticators;
 
 namespace cs_api_dotnet
 {
@@ -14,6 +17,18 @@ namespace cs_api_dotnet
         private string _companyId = "";
         private string _apiEndpoint = "https://app.casestack.io";
         private string _apiVersion = "1.0.0";
+
+        /// <summary>
+        /// Creates and instance of CaseStackApi
+        /// </summary>
+        /// <param name="useStagingEndpoint">Set to true if you want to connect to casestack staging api</param>
+        public CaseStackApi(bool useStagingEndpoint = false)
+        {
+            if (useStagingEndpoint == true)
+            {
+                _apiEndpoint = "https://staging.casestack.io";
+            }
+        }
 
         /// <summary>
         /// Available shipment statuses
@@ -90,6 +105,8 @@ namespace cs_api_dotnet
             Archived,
         }
 
+        public string ApiEndpoint { get { return _apiEndpoint; }}
+
         /// <summary>
         /// Authenticate API Access. Your credentials are available under the 'Settings > CaseStack API'.
         /// </summary>
@@ -97,20 +114,19 @@ namespace cs_api_dotnet
         /// <param name="companyId">Your Company ID</param>
         public void Authenticate(String key, String companyId)
         {
+            if (string.IsNullOrEmpty(key))
+                throw new ArgumentNullException("key");
+
+            if(string.IsNullOrEmpty(companyId))
+                throw new ArgumentNullException("companyId");
+
             _apiKey = key;
             _companyId = companyId;
         }
 
-        /// <summary>
-        /// Toggle between production or test environments
-        /// </summary>
-        /// <param name="production">Use production environment</param>
-        public void UseProduction(Boolean production)
-        {
-            _apiEndpoint = production ? "https://app.casestack.io" : "https://staging.casestack.io";
-        }
+      
 
-        private RestClient GetRestClient()
+        protected virtual IRestClient GetRestClient()
         {
             if (String.IsNullOrEmpty(_apiEndpoint) || String.IsNullOrEmpty(_companyId) ||
                 String.IsNullOrEmpty(_apiKey))
@@ -133,8 +149,9 @@ namespace cs_api_dotnet
         /// <returns>Carrier Object</returns>
         public Carrier GetCarrier(string carrierId)
         {
+
             if (String.IsNullOrEmpty(carrierId))
-                throw new ApplicationException("Carrier ID cannot be empty.");
+                throw new ArgumentNullException("carrierId");
 
             var client = GetRestClient();
             var request = new RestRequest
@@ -146,11 +163,49 @@ namespace cs_api_dotnet
 
             var response = client.Execute<Carrier>(request);
             if (response.ErrorException != null)
-                throw new ApplicationException("Error retrieving Carrier", response.ErrorException);
+                throw new HttpException((int)response.StatusCode, "Error retrieving Carrier");
 
             var carrier = response.Data;
             carrier.restClient = client;
             return carrier;
+        }
+
+        /// <summary>
+        /// Get Custom Fields for an object type
+        /// </summary>
+        /// <typeparam name="T">Classs must be of type Customizable</typeparam>
+        /// <returns>Custom Fields Object</returns>
+        public CustomFields GetCustomFields<T>() where T : Customizable
+        {
+            var parent = typeof (T).Name.ToLower();
+            var client = GetRestClient();
+            var request = new RestRequest
+            {
+                Resource = "api/customfield/" + parent,
+                RequestFormat = DataFormat.Json,
+                RootElement = "Carrier"
+            };
+
+            var response = client.Execute<CustomFields>(request);
+            if (response.ErrorException != null)
+            {
+                if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+                {
+                    // no custom fields defined for object, so return a blank object
+                    CustomFields blank = new CustomFields();
+                    blank._id = "";
+                    blank.fields = new System.Collections.Generic.List<Field>();
+                    blank.parent = parent;
+                    return blank;
+                }
+                else
+                {
+                    throw new ApplicationException("Error retrieving custom fields", response.ErrorException);
+                }
+            }
+
+            var customFields = response.Data;
+            return customFields;
         }
 
         /// <summary>
@@ -170,31 +225,7 @@ namespace cs_api_dotnet
             if (pos <= -1)
                 throw new ApplicationException("Parent can only be 'carrier', 'customer' or 'shipment'");
 
-            var client = GetRestClient();
-            var request = new RestRequest
-            {
-                Resource = "api/customfield/" + parent,
-                RequestFormat = DataFormat.Json,
-                RootElement = "Carrier"
-            };
-
-            var response = client.Execute<CustomFields>(request);
-            if (response.ErrorException != null)
-            {
-                if (response.StatusCode == System.Net.HttpStatusCode.NotFound) {
-                    // no custom fields defined for object, so return a blank object
-                    CustomFields blank = new CustomFields();
-                    blank._id = "";
-                    blank.fields = new System.Collections.Generic.List<Field>();
-                    blank.parent = parent;
-                    return blank;
-                } else {
-                    throw new ApplicationException("Error retrieving custom fields", response.ErrorException);
-                }          
-            }
-                
-            var customFields = response.Data;
-            return customFields;
+ 
         }
 
         /// <summary>
@@ -206,7 +237,7 @@ namespace cs_api_dotnet
         {
             if (String.IsNullOrEmpty(customerId))
             {
-                throw new ApplicationException("Customer ID cannot be empty.");
+                throw new ArgumentNullException("customerId");
             }
 
             var client = GetRestClient();
@@ -219,7 +250,7 @@ namespace cs_api_dotnet
 
             var response = client.Execute<Customer>(request);
             if (response.ErrorException != null)
-                throw new ApplicationException("Error retrieving Customer", response.ErrorException);
+                throw new HttpException((int)response.StatusCode, "Error retrieving Customer");
 
             var customer = response.Data;
             customer.restClient = client;

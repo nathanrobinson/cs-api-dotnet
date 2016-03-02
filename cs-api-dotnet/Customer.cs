@@ -56,7 +56,7 @@ namespace cs_api_dotnet
         /// </summary>
         public Dictionary<string, string> custom_fields { get; set; }
 
-        internal RestClient restClient;
+        internal IRestClient restClient;
 
         public void Save()
         {

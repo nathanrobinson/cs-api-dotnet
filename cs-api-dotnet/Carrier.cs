@@ -9,7 +9,7 @@ namespace cs_api_dotnet
     /// <summary>
     /// Carrier Object
     /// </summary>
-    public partial class Carrier
+    public class Carrier : Customizable
     {
         /// <summary>
         /// Carrier ID
@@ -66,7 +66,7 @@ namespace cs_api_dotnet
         /// </summary>
         public Dictionary<string, string> custom_fields { get; set; }
 
-        internal RestClient restClient;
+        internal IRestClient restClient;
 
         public void Save()
         {
