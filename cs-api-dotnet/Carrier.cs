@@ -3,6 +3,7 @@ using RestSharp;
 using System;
 using System.Collections.Generic;
 using System.Net;
+using System.Web;
 
 namespace cs_api_dotnet
 {
@@ -77,7 +78,7 @@ namespace cs_api_dotnet
                 RequestFormat = DataFormat.Json
             };
 
-            var body = JsonConvert.SerializeObject(new { carrier = this }, new JsonSerializerSettings
+            var body = JsonConvert.SerializeObject(new {carrier = this}, new JsonSerializerSettings
             {
                 NullValueHandling = NullValueHandling.Ignore
             });
@@ -85,13 +86,9 @@ namespace cs_api_dotnet
             request.AddParameter("application/json", body, ParameterType.RequestBody);
 
             var response = restClient.Execute(request);
-            if (response.ErrorException != null)
-                throw new ApplicationException("Error updating Carrier", response.ErrorException);
-
-            if (response.StatusCode != HttpStatusCode.OK)
-                throw new ApplicationException("Error updating Carrier: " + response.Content);
+            if (response.ErrorException != null || response.StatusCode != HttpStatusCode.OK)
+                throw new HttpException((int) response.StatusCode, "Error updating Carrier", response.ErrorException);
         }
-
     }
 
     /// <summary>

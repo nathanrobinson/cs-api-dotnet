@@ -50,9 +50,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CaseStackApiStub.cs" />
+    <Compile Include="CaseStackApiMock.cs" />
     <Compile Include="CaseStackAPITests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TestError.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

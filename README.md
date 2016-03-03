@@ -23,11 +23,12 @@ Before you can make any API calls, you'll have to authenticate and pick your env
 ```C#
 // establish connection
 CaseStackApi api = new CaseStackApi();
-api.Authenticate("<put your API Key here>", "<put your Company ID here>");
 
-// set this to 'true' to operate on production data (if not called, the API defaults to production)
-api.UseProduction(false);
-````
+// establish connection to staging
+CaseStackApi api = new CaseStackApi(useStagingEndpoint:true);
+
+api.Authenticate("<put your API Key here>", "<put your Company ID here>");
+```
 
 **Getting objects by their ID**
 	
@@ -80,13 +81,15 @@ api.SetShipmentStatus(shipmentId, CaseStackApi.ShipmentStatus.DeliveryAppointmen
 
 **Getting all Custom Fields.**
 
-This only has to be done once. It can be retrieved and cached through the life-cycle of the application.
+This only has to be done once. It can be retrieved and cached through the life-cycle of the application. 
 
 ```C#
-CustomFields carrierCustomFields = api.GetCustomFields("carrier");
-CustomFields customerCustomFields = api.GetCustomFields("customer");
-CustomFields shipmentCustomFields = api.GetCustomFields("shipment");
+CustomFields carrierCustomFields = api.GetCustomFields<Carrier>();
+CustomFields customerCustomFields = api.GetCustomFields<Customer>();
+CustomFields shipmentCustomFields = api.GetCustomFields<Shipment>();
 ```
+
+Note: An object bust be of type "Customizable" in order to retrieve custom fields.
 
 **Stitching together custom fields IDs and their labels**
 
@@ -104,3 +107,25 @@ foreach (string key in carrier.custom_fields.Keys)
     Console.WriteLine("\t => {0}: {1} ({2})", field.name, value, field.type);
 }
 ```	
+
+**Exception Handling**
+
+```C#
+//get a customer with error handling
+
+const string customerId = "38fc6a35";
+
+Customer customer = null;
+
+try
+{
+    customer = api.GetCustomer(customerId);
+}
+catch (HttpException exception)
+{
+    if (exception.GetHttpCode() == 404)
+    {
+        Console.WriteLine("Customer with ID '{0}' was not found", customerId);
+    }
+}
+```

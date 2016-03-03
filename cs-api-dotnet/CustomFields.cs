@@ -7,6 +7,10 @@ namespace cs_api_dotnet
     /// </summary>
     public class CustomFields
     {
+        public CustomFields()
+        {
+            fields = new List<Field>();
+        }
         /// <summary>
         /// ID of custom fields
         /// </summary>

@@ -3,13 +3,14 @@ using RestSharp;
 using System;
 using System.Collections.Generic;
 using System.Net;
+using System.Web;
 
 namespace cs_api_dotnet
 {
     /// <summary>
     /// Customer Object
     /// </summary>
-    public partial class Customer
+    public class Customer
     {
         /// <summary>
         /// Customer ID
@@ -75,11 +76,9 @@ namespace cs_api_dotnet
             request.AddParameter("application/json", body, ParameterType.RequestBody);
 
             var response = restClient.Execute(request);
-            if (response.ErrorException != null)
-                throw new ApplicationException("Error updating Customer", response.ErrorException);
+            if (response.ErrorException != null || response.StatusCode != HttpStatusCode.OK)
+                throw new HttpException ((int)response.StatusCode, "Error updating Customer", response.ErrorException);
 
-            if (response.StatusCode != HttpStatusCode.OK)
-                throw new ApplicationException("Error updating Customer: " + response.Content);
         }
     }
 
