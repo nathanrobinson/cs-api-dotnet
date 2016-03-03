@@ -307,29 +307,6 @@ namespace cs_api_dotnet_tests
             api.GetAddress("foo");
         }
 
-        [Test]
-        public void Foo()
-        {
-            var api = new CaseStackApiMock();
-            api.Authenticate("foo", "foo");
-
-            const string customerId = "err";
-
-            Customer customer = null;
-            try
-            {
-                customer = api.GetCustomer(customerId);
-            }
-            catch (HttpException exception)
-            {
-                if (exception.GetHttpCode() == 404)
-                {
-                    Console.WriteLine("Customer with ID '{0}' was not found", customerId);
-                }
-                throw;
-            }
-        }
-
         #endregion
 
     }
