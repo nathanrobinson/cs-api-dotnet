@@ -1,6 +1,9 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Net;
+using System.Web;
 using RestSharp;
+using RestSharp.Authenticators;
 
 namespace cs_api_dotnet
 {
@@ -16,79 +19,70 @@ namespace cs_api_dotnet
         private string _apiVersion = "1.0.0";
 
         /// <summary>
+        /// Creates and instance of CaseStackApi
+        /// </summary>
+        /// <param name="useStagingEndpoint">Set to true if you want to connect to casestack staging api</param>
+        public CaseStackApi(bool useStagingEndpoint = false)
+        {
+            if (useStagingEndpoint == true)
+            {
+                _apiEndpoint = "https://staging.casestack.io";
+            }
+        }
+
+        /// <summary>
         /// Available shipment statuses
         /// </summary>
         public enum ShipmentStatus
         {
-            [DescriptionAttribute("Broker Approval Pending")]
-            BrokerApprovalPending,
+            [DescriptionAttribute("Broker Approval Pending")] BrokerApprovalPending,
 
-            [DescriptionAttribute("Quote Pending")]
-            QuotePending,
-            
-            [DescriptionAttribute("Customer Approval Pending")]
-            CustomerApprovalPending,
-            
-            [DescriptionAttribute("Customer Rejected")]
-            CustomerRejected,
-            
-            [DescriptionAttribute("Ready to Tender")]
-            ReadytoTender,
-            
-            [DescriptionAttribute("Tendered")]
-            Tendered,
-            
-            [DescriptionAttribute("Tender Accepted by Carrier")]
-            TenderAcceptedbyCarrier,
-            
-            [DescriptionAttribute("Tender Accepted by Rep")]
-            TenderAcceptedbyRep,
-            
-            [DescriptionAttribute("Tender Rejected by Carrier")]
-            TenderRejectedbyCarrier,
-            
-            [DescriptionAttribute("Tender Rejected by Rep")]
-            TenderRejectedbyRep,
-            
-            [DescriptionAttribute("Pickup Appointment Scheduled")]
-            PickupAppointmentScheduled,
-            
-            [DescriptionAttribute("Arrived at Pickup Location")]
-            ArrivedatPickupLocation,
-            
-            [DescriptionAttribute("Picked Up")]
-            PickedUp,
-            
-            [DescriptionAttribute("In Transit")]
-            InTransit,
-            
-            [DescriptionAttribute("Delivery Appointment Scheduled")]
-            DeliveryAppointmentScheduled,
-            
-            [DescriptionAttribute("Arrived at Delivery Location")]
-            ArrivedatDeliveryLocation,
-            
-            [DescriptionAttribute("Out for Delivery")]
-            OutforDelivery,
-            
-            [DescriptionAttribute("Delivered")]
-            Delivered,
-            
-            [DescriptionAttribute("Delivery Exception")]
-            DeliveryException,
-            
-            [DescriptionAttribute("Cancelled")]
-            Cancelled,
-            
-            [DescriptionAttribute("Billable")]
-            Billable,
-            
-            [DescriptionAttribute("Invoiced")]
-            Invoiced,
-            
-            [DescriptionAttribute("Archived")]
-            Archived,
+            [DescriptionAttribute("Quote Pending")] QuotePending,
+
+            [DescriptionAttribute("Customer Approval Pending")] CustomerApprovalPending,
+
+            [DescriptionAttribute("Customer Rejected")] CustomerRejected,
+
+            [DescriptionAttribute("Ready to Tender")] ReadytoTender,
+
+            [DescriptionAttribute("Tendered")] Tendered,
+
+            [DescriptionAttribute("Tender Accepted by Carrier")] TenderAcceptedbyCarrier,
+
+            [DescriptionAttribute("Tender Accepted by Rep")] TenderAcceptedbyRep,
+
+            [DescriptionAttribute("Tender Rejected by Carrier")] TenderRejectedbyCarrier,
+
+            [DescriptionAttribute("Tender Rejected by Rep")] TenderRejectedbyRep,
+
+            [DescriptionAttribute("Pickup Appointment Scheduled")] PickupAppointmentScheduled,
+
+            [DescriptionAttribute("Arrived at Pickup Location")] ArrivedatPickupLocation,
+
+            [DescriptionAttribute("Picked Up")] PickedUp,
+
+            [DescriptionAttribute("In Transit")] InTransit,
+
+            [DescriptionAttribute("Delivery Appointment Scheduled")] DeliveryAppointmentScheduled,
+
+            [DescriptionAttribute("Arrived at Delivery Location")] ArrivedatDeliveryLocation,
+
+            [DescriptionAttribute("Out for Delivery")] OutforDelivery,
+
+            [DescriptionAttribute("Delivered")] Delivered,
+
+            [DescriptionAttribute("Delivery Exception")] DeliveryException,
+
+            [DescriptionAttribute("Cancelled")] Cancelled,
+
+            [DescriptionAttribute("Billable")] Billable,
+
+            [DescriptionAttribute("Invoiced")] Invoiced,
+
+            [DescriptionAttribute("Archived")] Archived,
         }
+
+        public string ApiEndpoint { get { return _apiEndpoint; }}
 
         /// <summary>
         /// Authenticate API Access. Your credentials are available under the 'Settings > CaseStack API'.
@@ -97,26 +91,20 @@ namespace cs_api_dotnet
         /// <param name="companyId">Your Company ID</param>
         public void Authenticate(String key, String companyId)
         {
+            if (string.IsNullOrEmpty(key))
+                throw new ArgumentNullException("key");
+
+            if(string.IsNullOrEmpty(companyId))
+                throw new ArgumentNullException("companyId");
+
             _apiKey = key;
             _companyId = companyId;
         }
 
-        /// <summary>
-        /// Toggle between production or test environments
-        /// </summary>
-        /// <param name="production">Use production environment</param>
-        public void UseProduction(Boolean production)
-        {
-            _apiEndpoint = production ? "https://app.casestack.io" : "https://staging.casestack.io";
-        }
+      
 
-        private RestClient GetRestClient()
+        protected virtual IRestClient GetRestClient()
         {
-            if (String.IsNullOrEmpty(_apiEndpoint) || String.IsNullOrEmpty(_companyId) ||
-                String.IsNullOrEmpty(_apiKey))
-                throw new ApplicationException(
-                    "API Client is not properly Initialized. Please set credentials and environment");
-
             var client = new RestClient
             {
                 BaseUrl = new Uri(_apiEndpoint),
@@ -133,8 +121,9 @@ namespace cs_api_dotnet
         /// <returns>Carrier Object</returns>
         public Carrier GetCarrier(string carrierId)
         {
+
             if (String.IsNullOrEmpty(carrierId))
-                throw new ApplicationException("Carrier ID cannot be empty.");
+                throw new ArgumentNullException("carrierId");
 
             var client = GetRestClient();
             var request = new RestRequest
@@ -146,7 +135,7 @@ namespace cs_api_dotnet
 
             var response = client.Execute<Carrier>(request);
             if (response.ErrorException != null)
-                throw new ApplicationException("Error retrieving Carrier", response.ErrorException);
+                throw new HttpException((int)response.StatusCode, "Error retrieving Carrier");
 
             var carrier = response.Data;
             carrier.restClient = client;
@@ -156,20 +145,11 @@ namespace cs_api_dotnet
         /// <summary>
         /// Get Custom Fields for an object type
         /// </summary>
-        /// <param name="carrierId">Parent TYpe</param>
+        /// <typeparam name="T">Classs must be of type Customizable</typeparam>
         /// <returns>Custom Fields Object</returns>
-        public CustomFields GetCustomFields(string parent)
+        public CustomFields GetCustomFields<T>() where T : Customizable
         {
-            if (String.IsNullOrEmpty(parent))
-                throw new ApplicationException("Parent cannot be empty.");
-
-            string[] allowedParents = { "carrier", "customer", "shipment" };
-
-            int pos = Array.IndexOf(allowedParents, parent);
-
-            if (pos <= -1)
-                throw new ApplicationException("Parent can only be 'carrier', 'customer' or 'shipment'");
-
+            var parent = typeof (T).Name.ToLower();
             var client = GetRestClient();
             var request = new RestRequest
             {
@@ -181,18 +161,10 @@ namespace cs_api_dotnet
             var response = client.Execute<CustomFields>(request);
             if (response.ErrorException != null)
             {
-                if (response.StatusCode == System.Net.HttpStatusCode.NotFound) {
-                    // no custom fields defined for object, so return a blank object
-                    CustomFields blank = new CustomFields();
-                    blank._id = "";
-                    blank.fields = new System.Collections.Generic.List<Field>();
-                    blank.parent = parent;
-                    return blank;
-                } else {
-                    throw new ApplicationException("Error retrieving custom fields", response.ErrorException);
-                }          
+                throw new HttpException((int)response.StatusCode, "Error retrieving custom fields", response.ErrorException);
+              
             }
-                
+
             var customFields = response.Data;
             return customFields;
         }
@@ -206,7 +178,7 @@ namespace cs_api_dotnet
         {
             if (String.IsNullOrEmpty(customerId))
             {
-                throw new ApplicationException("Customer ID cannot be empty.");
+                throw new ArgumentNullException("customerId");
             }
 
             var client = GetRestClient();
@@ -219,7 +191,7 @@ namespace cs_api_dotnet
 
             var response = client.Execute<Customer>(request);
             if (response.ErrorException != null)
-                throw new ApplicationException("Error retrieving Customer", response.ErrorException);
+                throw new HttpException((int)response.StatusCode, "Error retrieving Customer");
 
             var customer = response.Data;
             customer.restClient = client;
@@ -243,7 +215,7 @@ namespace cs_api_dotnet
 
             var response = client.Execute<Shipment>(request);
             if (response.ErrorException != null)
-                throw new ApplicationException("Error retrieving Shipment", response.ErrorException);
+                throw new HttpException((int)response.StatusCode, "Error retrieving Shipment", response.ErrorException);
 
             var shipment = response.Data;
             return shipment;
@@ -269,7 +241,7 @@ namespace cs_api_dotnet
 
             var response = client.Execute(request);
             if (response.ErrorException != null)
-                throw new ApplicationException("Error locking/unlocking Shipment", response.ErrorException);
+                throw new HttpException((int)response.StatusCode, "Error locking/unlocking Shipment", response.ErrorException);
         }
 
         /// <summary>
@@ -287,11 +259,34 @@ namespace cs_api_dotnet
                 Method = Method.PUT
             };
 
-            request.AddParameter("status", EnumUtils.stringValueOf(status));
+            request.AddParameter("status", status.ToFriendlyName());
 
             var response = client.Execute(request);
             if (response.ErrorException != null)
-                throw new ApplicationException("Error updating status of Shipment", response.ErrorException);
+                throw new HttpException((int)response.StatusCode, "Error updating status of Shipment", response.ErrorException);
+        }
+
+        /// <summary>
+        /// Get Address by ID
+        /// </summary>
+        /// <param name="addressId"></param>
+        /// <returns>Address Object</returns>
+        public Address GetAddress(string addressId)
+        {
+            var client = GetRestClient();
+            var request = new RestRequest
+            {
+                Resource = "api/address/" + addressId,
+                RequestFormat = DataFormat.Json,
+                RootElement = "Address"
+            };
+
+            var response = client.Execute<Address>(request);
+            if (response.ErrorException != null || response.StatusCode != HttpStatusCode.OK)
+                throw new HttpException((int)response.StatusCode, "Error retrieving Address", response.ErrorException);
+
+            var address = response.Data;
+            return address;
         }
     }
 }

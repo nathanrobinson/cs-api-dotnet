@@ -5,7 +5,7 @@ namespace cs_api_dotnet
     /// <summary>
     /// Address Object
     /// </summary>
-    public partial class Address
+    public class Address : Customizable
     {
         /// <summary>
         /// Address Line 1 (Street)
