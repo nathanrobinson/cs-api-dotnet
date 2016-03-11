@@ -62,11 +62,6 @@ namespace cs_api_dotnet
         public List<CarrierContact> contacts { get; set; }
         public List<Terminal> terminals { get; set; }
 
-        /// <summary>
-        /// Dictionary of custom fields created for object.
-        /// </summary>
-        public Dictionary<string, string> custom_fields { get; set; }
-
         internal IRestClient restClient;
 
         public void Save()
