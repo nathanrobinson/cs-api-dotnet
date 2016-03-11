@@ -10,7 +10,7 @@ namespace cs_api_dotnet
     /// <summary>
     /// Customer Object
     /// </summary>
-    public class Customer
+    public class Customer : Customizable
     {
         /// <summary>
         /// Customer ID
@@ -51,11 +51,6 @@ namespace cs_api_dotnet
         public CustomerIdentifiers identifiers { get; set; }
         public List<CustomerContact> contacts { get; set; }
         public Address address { get; set; }
-
-        /// <summary>
-        /// Dictionary of custom fields created for object.
-        /// </summary>
-        public Dictionary<string, string> custom_fields { get; set; }
 
         internal IRestClient restClient;
 

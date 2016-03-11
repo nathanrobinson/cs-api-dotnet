@@ -6,7 +6,7 @@ namespace cs_api_dotnet
     /// <summary>
     /// Shipment Object
     /// </summary>
-    public partial class Shipment
+    public class Shipment : Customizable
     {
         /// <summary>
         /// Shipment ID
@@ -163,10 +163,6 @@ namespace cs_api_dotnet
         /// </summary>
         public List<RouteLog> route_log { get; set; }
 
-        /// <summary>
-        /// Dictionary of custom fields created for object.
-        /// </summary>
-        public Dictionary<string, string> custom_fields { get; set; }
     }
 
    /// <summary>

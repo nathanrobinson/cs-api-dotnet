@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace cs_api_dotnet
 {
     /// <summary>
@@ -5,5 +7,9 @@ namespace cs_api_dotnet
     /// </summary>
     public class Customizable
     {
+        /// <summary>
+        /// Dictionary of custom fields created for object.
+        /// </summary>
+        public Dictionary<string, string> custom_fields { get; set; }
     }
 }
