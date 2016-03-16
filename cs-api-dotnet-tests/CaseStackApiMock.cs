@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Threading.Tasks;
 using cs_api_dotnet;
 using FakeItEasy;
 using RestSharp;
@@ -12,9 +13,6 @@ namespace cs_api_dotnet_tests
 {
     public class CaseStackApiMock : CaseStackApi
     {
-        private IRestClient _restClient;
-        
-
         protected override IRestClient GetRestClient()
         {
             var restClient = A.Fake<IRestClient>();
@@ -60,7 +58,67 @@ namespace cs_api_dotnet_tests
             A.CallTo(() => restClient.Execute<Address>(A<IRestRequest>.That.Matches(r => r.Resource == apiGetAddressError)))
                 .Returns(new RestResponse<Address>{StatusCode = HttpStatusCode.InternalServerError});
             A.CallTo(() => restClient.Execute<Address>(A<IRestRequest>.That.Matches(r => r.Resource == apiGetAddressGood))).Returns(new RestResponse<Address>{StatusCode = HttpStatusCode.OK, Data = new Address()});
+
+#if ASYNC
             
+            //SHIPMENTS
+            A.CallTo(() => restClient.ExecuteTaskAsync<Shipment>(A<IRestRequest>.That.Matches(r => r.Resource == apiShipStatusErr )))
+                .Returns(Task.FromResult(new RestResponse<Shipment> { StatusCode = HttpStatusCode.InternalServerError, ErrorException = new Exception("test") } as IRestResponse<Shipment>));
+
+            A.CallTo(() => restClient.ExecuteTaskAsync<Shipment>(A<IRestRequest>.That.Matches(r => r.Resource == apiLockShipmentErr)))
+                .Returns(Task.FromResult(new RestResponse<Shipment> { StatusCode = HttpStatusCode.InternalServerError, ErrorException = new Exception("test") } as IRestResponse<Shipment>));
+
+            A.CallTo(() => restClient.ExecuteTaskAsync<Shipment>(A<IRestRequest>.That.Matches(r => r.Resource == apiShipStatusGood)))
+                .Returns(Task.FromResult(new RestResponse<Shipment> { Data = new Shipment() } as IRestResponse<Shipment>));
+
+            A.CallTo(() => restClient.ExecuteTaskAsync<Shipment>(A<IRestRequest>.That.Matches(r => r.Resource == apiLockShipmentGood )))
+                .Returns(Task.FromResult(new RestResponse<Shipment> { Data = new Shipment() } as IRestResponse<Shipment>));
+
+            A.CallTo(() => restClient.ExecuteTaskAsync<Shipment>(A<IRestRequest>.That.Not.Matches(r=>r.Resource == apiShipmentErr)))
+                .Returns(Task.FromResult(new RestResponse<Shipment>{Data = new Shipment() } as IRestResponse<Shipment>));
+
+            A.CallTo(() => restClient.ExecuteTaskAsync<Shipment>(A<IRestRequest>.That.Matches(r => r.Resource == apiShipmentErr)))
+                .Returns(Task.FromResult(new RestResponse<Shipment>{StatusCode = HttpStatusCode.InternalServerError, ErrorException = new Exception("test") } as IRestResponse<Shipment>));
+
+            //CustomFields
+            A.CallTo(() => restClient.ExecuteTaskAsync<CustomFields>(A<IRestRequest>.That.Not.Matches(r => r.Resource.StartsWith(apiCustomFieldsErr))))
+                .Returns(Task.FromResult(new RestResponse<CustomFields>() {Data = new CustomFields() } as IRestResponse<CustomFields>));
+
+            //CUSTOMERS
+            A.CallTo(() => restClient.ExecuteTaskAsync<Customer>(A<IRestRequest>.That.Matches(r => r.Resource == apiCustomerGood)))
+                .Returns(Task.FromResult(new RestResponse<Customer>() {StatusCode  = HttpStatusCode.OK, Data = new Customer{customer_id = "foo"} } as IRestResponse<Customer>));
+
+            A.CallTo(() => restClient.ExecuteTaskAsync<Customer>(A<IRestRequest>.That.Matches(r => r.Resource == apiCustomerErr)))
+                .Returns(Task.FromResult(new RestResponse<Customer> { StatusCode = HttpStatusCode.InternalServerError, ErrorException = new Exception("test") } as IRestResponse<Customer>));
+
+            A.CallTo(() => restClient.ExecuteTaskAsync<Customer>(A<IRestRequest>.That.Matches(r => r.Resource == apiCustomerErr)))
+                .Returns(Task.FromResult(new RestResponse<Customer>() { StatusCode = HttpStatusCode.InternalServerError, ErrorException = new Exception("test") } as IRestResponse<Customer>));
+
+            A.CallTo(() => restClient.ExecuteTaskAsync<Customer>(A<IRestRequest>.That.Not.Matches(r => r.Resource == apiCustomerErr)))
+                .Returns(Task.FromResult(new RestResponse<Customer>() { Data = new Customer{ customer_id = "foo"} } as IRestResponse<Customer>));
+            
+            //CARRIERS
+            A.CallTo(() => restClient.ExecuteTaskAsync<Carrier>(A<IRestRequest>.That.Matches(r => r.Resource == apiCarrierGood)))
+                .Returns(Task.FromResult(new RestResponse<Carrier>() { StatusCode = HttpStatusCode.OK, Data = new Carrier { carrier_id = "foo" } } as IRestResponse<Carrier>));
+
+            A.CallTo(() => restClient.ExecuteTaskAsync<Carrier>(A<IRestRequest>.That.Matches(r => r.Resource == apiCarrierErr)))
+                .Returns(Task.FromResult(new RestResponse<Carrier> { StatusCode = HttpStatusCode.InternalServerError, ErrorException = new Exception("test") } as IRestResponse<Carrier>));
+
+            A.CallTo(() => restClient.ExecuteTaskAsync<Carrier>(A<IRestRequest>.That.Matches(r => r.Resource == apiCarrierErr)))
+                .Returns(Task.FromResult(new RestResponse<Carrier>() { StatusCode = HttpStatusCode.InternalServerError, ErrorException = new Exception("test") } as IRestResponse<Carrier>));
+
+            A.CallTo(() => restClient.ExecuteTaskAsync<Carrier>(A<IRestRequest>.That.Not.Matches(r=>r.Resource==apiCarrierErr)))
+                .Returns(Task.FromResult(new RestResponse<Carrier>(){Data = new Carrier{carrier_id = "foo"} } as IRestResponse<Carrier>));
+
+            //ADDRESSES
+            A.CallTo(() => restClient.ExecuteTaskAsync<Address>(A<IRestRequest>.That.Matches(r => r.Resource == apiGetAddressError)))
+                .Returns(Task.FromResult(new RestResponse<Address>{StatusCode = HttpStatusCode.InternalServerError } as IRestResponse<Address>));
+
+            A.CallTo(() => restClient.ExecuteTaskAsync<Address>(A<IRestRequest>.That.Matches(r => r.Resource == apiGetAddressGood)))
+                .Returns(Task.FromResult(new RestResponse<Address>{StatusCode = HttpStatusCode.OK, Data = new Address() } as IRestResponse<Address>));
+            
+#endif
+
             return restClient; 
         }
 
@@ -68,8 +126,5 @@ namespace cs_api_dotnet_tests
         {
             return base.GetRestClient();
         }
-
-
-     
     }
 }

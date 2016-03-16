@@ -308,7 +308,6 @@ namespace cs_api_dotnet_tests
         }
 
         #endregion
-
     }
 }
 

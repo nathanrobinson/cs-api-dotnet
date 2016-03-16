@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Net;
+using System.Threading.Tasks;
 using System.Web;
 using RestSharp;
 using RestSharp.Authenticators;
@@ -288,5 +289,184 @@ namespace cs_api_dotnet
             var address = response.Data;
             return address;
         }
+
+#if ASYNC
+
+
+        /// <summary>
+        /// Get Carrier by ID
+        /// </summary>
+        /// <param name="carrierId">Carrier ID</param>
+        /// <returns>Carrier Object</returns>
+        public async Task<Carrier> GetCarrierAsync(string carrierId)
+        {
+
+            if (String.IsNullOrEmpty(carrierId))
+                throw new ArgumentNullException("carrierId");
+
+            var client = GetRestClient();
+            var request = new RestRequest
+            {
+                Resource = "api/carrier/" + carrierId,
+                RequestFormat = DataFormat.Json,
+                RootElement = "Carrier"
+            };
+
+            var response = await client.ExecuteTaskAsync<Carrier>(request).ConfigureAwait(false);
+            if (response.ErrorException != null)
+                throw new HttpException((int)response.StatusCode, "Error retrieving Carrier");
+
+            var carrier = response.Data;
+            carrier.restClient = client;
+            return carrier;
+        }
+
+        /// <summary>
+        /// Get Custom Fields for an object type
+        /// </summary>
+        /// <typeparam name="T">Classs must be of type Customizable</typeparam>
+        /// <returns>Custom Fields Object</returns>
+        public async Task<CustomFields> GetCustomFieldsAsync<T>() where T : Customizable
+        {
+            var parent = typeof(T).Name.ToLower();
+            var client = GetRestClient();
+            var request = new RestRequest
+            {
+                Resource = "api/customfield/" + parent,
+                RequestFormat = DataFormat.Json,
+                RootElement = "Carrier"
+            };
+
+            var response = await client.ExecuteTaskAsync<CustomFields>(request).ConfigureAwait(false);
+            if (response.ErrorException != null)
+            {
+                throw new HttpException((int)response.StatusCode, "Error retrieving custom fields", response.ErrorException);
+
+            }
+
+            var customFields = response.Data;
+            return customFields;
+        }
+
+        /// <summary>
+        /// Get Customer by ID
+        /// </summary>
+        /// <param name="customerId">Customer ID</param>
+        /// <returns>Customer Object</returns>
+        public async Task<Customer> GetCustomerAsync(string customerId)
+        {
+            if (String.IsNullOrEmpty(customerId))
+            {
+                throw new ArgumentNullException("customerId");
+            }
+
+            var client = GetRestClient();
+            var request = new RestRequest
+            {
+                Resource = "api/customer/" + customerId,
+                RequestFormat = DataFormat.Json,
+                RootElement = "Customer"
+            };
+
+            var response = await client.ExecuteTaskAsync<Customer>(request).ConfigureAwait(false);
+            if (response.ErrorException != null)
+                throw new HttpException((int)response.StatusCode, "Error retrieving Customer");
+
+            var customer = response.Data;
+            customer.restClient = client;
+            return customer;
+        }
+
+        /// <summary>
+        /// Get Shipment by ID
+        /// </summary>
+        /// <param name="shipmentId">Shipment ID</param>
+        /// <returns>Shipment Object</returns>
+        public async Task<Shipment> GetShipmentAsync(int shipmentId)
+        {
+            var client = GetRestClient();
+            var request = new RestRequest
+            {
+                Resource = "api/shipment/" + shipmentId,
+                RequestFormat = DataFormat.Json,
+                RootElement = "Shipment"
+            };
+
+            var response = await client.ExecuteTaskAsync<Shipment>(request).ConfigureAwait(false);
+            if (response.ErrorException != null)
+                throw new HttpException((int)response.StatusCode, "Error retrieving Shipment", response.ErrorException);
+
+            var shipment = response.Data;
+            return shipment;
+        }
+
+        /// <summary>
+        /// Lock a shipment by ID, makes it read-only from the TMS. 
+        /// The shipment can still be updated via the API
+        /// </summary>
+        /// <param name="shipmentId">Shipment ID</param>
+        /// <param name="isLocked">Lock or Unlock</param>
+        public async Task LockShipmentAsync(int shipmentId, bool isLocked)
+        {
+            var client = GetRestClient();
+            var request = new RestRequest
+            {
+                Resource = "api/shipment/readonly/" + shipmentId,
+                RequestFormat = DataFormat.Json,
+                Method = Method.PUT
+            };
+
+            request.AddParameter("readonly", isLocked.ToString().ToLower());
+
+            var response = await client.ExecuteTaskAsync(request);
+            if (response.ErrorException != null)
+                throw new HttpException((int)response.StatusCode, "Error locking/unlocking Shipment", response.ErrorException);
+        }
+
+        /// <summary>
+        /// Set status of shipment
+        /// </summary>
+        /// <param name="shipmentId">Shipment ID</param>
+        /// <param name="status">Shipment Status</param>
+        public async Task SetShipmentStatusAsync(int shipmentId, ShipmentStatus status)
+        {
+            var client = GetRestClient();
+            var request = new RestRequest
+            {
+                Resource = "api/shipment/status/" + shipmentId,
+                RequestFormat = DataFormat.Json,
+                Method = Method.PUT
+            };
+
+            request.AddParameter("status", status.ToFriendlyName());
+
+            var response = await client.ExecuteTaskAsync(request).ConfigureAwait(false);
+            if (response.ErrorException != null)
+                throw new HttpException((int)response.StatusCode, "Error updating status of Shipment", response.ErrorException);
+        }
+
+        /// <summary>
+        /// Get Address by ID
+        /// </summary>
+        /// <param name="addressId"></param>
+        /// <returns>Address Object</returns>
+        public async Task<Address> GetAddressAsync(string addressId)
+        {
+            var client = GetRestClient();
+            var request = new RestRequest
+            {
+                Resource = "api/address/" + addressId,
+                RequestFormat = DataFormat.Json,
+                RootElement = "Address"
+            };
+
+            var response = await client.ExecuteTaskAsync<Address>(request).ConfigureAwait(false);
+            if (response.ErrorException != null || response.StatusCode != HttpStatusCode.OK)
+                throw new HttpException((int)response.StatusCode, "Error retrieving Address", response.ErrorException);
+
+            var address = response.Data;
+            return address;
+        }
+#endif
     }
 }
